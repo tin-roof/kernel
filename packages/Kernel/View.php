@@ -2,7 +2,7 @@
 namespace Packages\Kernel;
 
 /**
- * Views 
+ * Views
  *    Make the views accesible to the controllers
  *    Esentially build the templating engine.
  */
@@ -17,7 +17,7 @@ class View
 	 * @param string $view
 	 * @param array $variables
 	 */
-	public function make($view = '', $variables = []) {
+	public static function make($view = '', $variables = []) {
 		if (file_exists(VIEWS . $view . '.php')) {
 			ob_start();
 			require(VIEWS . $view . '.php');
@@ -31,7 +31,7 @@ class View
 
 	/**
 	 * Check the file string for any variables that exist in the class and replace them with their value
-	 * 
+	 *
 	 * @param string $file
 	 * @param array $variables
 	 */

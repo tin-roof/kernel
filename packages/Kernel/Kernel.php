@@ -7,16 +7,16 @@ namespace Packages\Kernel;
  */
 class Kernel
 {
-	private $_router;
-	
-	public function __construct() {
-		$this->_router = new \Packages\Kernel\Router;
-	}
+    private $_router;
 
-	/**
-	 * Anything that needs to happen in the app can start here
-	 */
-	public function init() {
-		$this->_router->route();
-	}
+    public function __construct() {
+        $this->_router = new \Packages\Kernel\Router;
+    }
+
+    /**
+     * Anything that needs to happen in the app can start here
+     */
+    public function init() {
+        $this->_router->route();
+    }
 }
