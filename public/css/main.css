@@ -22,13 +22,13 @@ body {
 	display: inline-block;
 	position: relative;
 	vertical-align: middle;
-	padding: 0 20px;
+	padding: 0 20px 0 0;
 	text-align: center;
 }
 .logo:before {
 	content: '';
 	position: absolute;
-	width: calc(100% - 40px);
+	width: calc(100% - 20px);
 	height: 100%;
 	background: rgba(255,255,255, 0.75);
 }
