@@ -22,11 +22,64 @@ class View
 			ob_start();
 			require(VIEWS . $view . '.php');
 			$file = ob_get_clean();
+
+			// put together parts of the template
+			self::buildTempalte($file);
+
+			// replace the variables
 			self::parseVariables($file, $variables);
 			echo $file;
 		} else {
 			echo 'failure';
 		}
+	}
+
+	/**
+	 * Parse throught he file and build the whole page. Puts all the pieces together
+	 *
+	 * @param string $file template file that needs to be compiled
+	 */
+	private static function buildTempalte(&$file = '') {
+		if (empty($file)) {
+			return;
+		}
+
+		// get the extended part of the view
+		$extendsRegex = '/@extends\(\'(.*?)\'\)/';
+		preg_match_all($extendsRegex, $file, $extends);
+
+		ob_start();
+		require(VIEWS . $extends[1][0] . '.php');
+		$page = ob_get_clean();
+
+		// get all the sections
+		$sectionsRegex = '/@section\(\'(.*?)\'\)/';
+		preg_match_all($sectionsRegex, $file, $sections);
+		foreach($sections[1] as $section) {
+			$sectionParts = explode('\',\'', str_replace(' ', '', $section));
+			if (count($sectionParts) > 1) {
+				$page = str_replace('@yield(\'' . $sectionParts[0] . '\')', $sectionParts[1], $page);
+				continue;
+			}
+
+			$contentRegex = '/(?<=@section\(\'content\'\)).*?(?=@endsection)/s';
+			preg_match_all($contentRegex, $file, $content);
+			$page = str_replace('@yield(\'' . $sectionParts[0] . '\')', $content[0][0], $page);
+
+		}
+
+		// get all the includes
+		$includesRegex = '/@include\(\'(.*?)\'\)/';
+		preg_match_all($includesRegex, $page, $includes);
+		foreach($includes[1] as $include) {
+			ob_start();
+			require(VIEWS . $include . '.php');
+			$includeFile = ob_get_clean();
+
+			$page = str_replace('@include(\'' . $include . '\')', $includeFile, $page);
+		}
+
+		$file = $page;
 	}
 
 	/**
