@@ -28,6 +28,7 @@ class View
 
 			// replace the variables
 			self::parseVariables($file, $variables);
+		
 			echo $file;
 		} else {
 			echo 'failure';
@@ -44,13 +45,17 @@ class View
 			return;
 		}
 
+		$page = $file;
+
 		// get the extended part of the view
 		$extendsRegex = '/@extends\(\'(.*?)\'\)/';
 		preg_match_all($extendsRegex, $file, $extends);
 
-		ob_start();
-		require(VIEWS . $extends[1][0] . '.php');
-		$page = ob_get_clean();
+		if (!empty($extends[1])) {
+		    ob_start();
+	 	    require(VIEWS . $extends[1][0] . '.php');
+		    $page = ob_get_clean();
+		}
 
 		// get all the sections
 		$sectionsRegex = '/@section\(\'(.*?)\'\)/';
@@ -80,6 +85,7 @@ class View
 		}
 
 		$file = $page;
+		return;
 	}
 
 	/**
