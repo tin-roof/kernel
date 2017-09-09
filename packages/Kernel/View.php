@@ -28,7 +28,7 @@ class View
 
 			// replace the variables
 			self::parseVariables($file, $variables);
-		
+
 			echo $file;
 		} else {
 			echo 'failure';
@@ -61,7 +61,8 @@ class View
 		$sectionsRegex = '/@section\(\'(.*?)\'\)/';
 		preg_match_all($sectionsRegex, $file, $sections);
 		foreach($sections[1] as $section) {
-			$sectionParts = explode('\',\'', str_replace(' ', '', $section));
+			$sectionParts = explode('\',\'', str_replace('\', \'', '\',\'', $section));
+
 			if (count($sectionParts) > 1) {
 				$page = str_replace('@yield(\'' . $sectionParts[0] . '\')', $sectionParts[1], $page);
 				continue;
