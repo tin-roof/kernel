@@ -18,10 +18,10 @@ class Route
 	}
 
 	/**
-	 * Return the routes that match the type 
-	 * 
+	 * Return the routes that match the type
+	 *
 	 * @param string $type what type of routes default all
-	 * 
+	 *
 	 * @return array the routes that match or all of them
 	 */
 	public function getRoutes($type = 'all') {
@@ -39,7 +39,12 @@ class Route
 	 * @param string $function
 	 */
 	public function get($uri, $function) {
-		$this->_routes['GET'][$this->_prefix . $uri] = $function;
+		$uri = $this->checkUri($uri);
+		$this->_routes['GET'][$this->_prefix . $uri['uri']] = [
+			'uri' => $uri['uri'],
+			'function' => $function,
+			'variables' => $uri['variables']
+		];
 	}
 
 	/**
@@ -49,7 +54,12 @@ class Route
 	 * @param string $function
 	 */
 	public function post($uri, $function) {
-		$this->_routes['POST'][$this->_prefix . $uri] = $function;
+		$uri = $this->checkUri($uri);
+		$this->_routes['POST'][$this->_prefix . $uri['uri']] = [
+			'uri' => $uri['uri'],
+			'function' => $function,
+			'variables' => $uri['variables']
+		];
 	}
 
 	/**
@@ -59,18 +69,54 @@ class Route
 	 * @param string $function
 	 */
 	public function put($uri, $function) {
-		$this->_routes['PUT'][$this->_prefix . $uri] = $function;
+		$uri = $this->checkUri($uri);
+		$this->_routes['PUT'][$this->_prefix . $uri['uri']] = [
+			'uri' => $uri['uri'],
+			'function' => $function,
+			'variables' => $uri['variables']
+		];
 	}
 
 	/**
 	 * Build the routes that use the DELETE request type and add it to the routes array
-	 * 
+	 *
 	 * @param string $uri
 	 * @param string $function
 	 */
 	public function delete($uri, $function) {
-		$this->_routes['DELETE'][$this->_prefix . $uri] = $function;
+		$uri = $this->checkUri($uri);
+		$this->_routes['DELETE'][$this->_prefix . $uri['uri']] = [
+			'uri' => $uri['uri'],
+			'function' => $function,
+			'variables' => $uri['variables']
+		];
 	}
+
+	/**
+	 * Check the uri for any variables
+	 *
+	 * @param string $uri uri to Check
+	 * @return array
+	 */
+	 private function checkUri($uri = '') {
+		 if (empty($uri)) {
+			 return ['uri' => ['/'], variables => []];
+		 }
+
+		 $variables = [];
+
+		 $uriParts = explode('/', $uri);
+		 foreach ($uriParts as $key => $piece) {
+			 if (strpos($piece, ':') === 0) {
+				 $variables[$key] = ltrim($piece, ':');
+			 }
+		 }
+
+		 // remove the colon from the uri
+		 $uri = implode('/', $uriParts);
+
+		 return ['uri' => $uri, 'variables' => $variables];
+	 }
 
 	/**
 	 * Read the web routes file
