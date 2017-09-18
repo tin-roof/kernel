@@ -4,6 +4,8 @@
     </IfModule>
 
     RewriteEngine On
+    
+    Options -Indexes
 
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -12,6 +14,7 @@
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-l
     RewriteRule ^ index.php [L]
 
     # Handle Authorization Header
