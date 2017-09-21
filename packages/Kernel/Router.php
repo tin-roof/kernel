@@ -54,15 +54,16 @@ class Router
 		} else {
 			$route = [
 				'uri' => $request,
-				'function' => $this->_routes[$method][$request]
+				'function' => $this->_routes[$method][$request]['function'],
+				'variables' => []
 			];
 
 		}
 
-		$route['variables'] = $this->getVariables($request, $route['variables']);
+		$variables = $this->getVariables($request, $route['variables']);
 
-		if (is_object($route['function'])) {
-			echo call_user_func_array($route['function'], $route['variables']);
+		if (is_object($route['function'])&& ($route['function'] instanceof \Closure)) {
+			echo call_user_func_array($route['function'], $variables);
 			exit;
 		} else if (is_string($route['function'])) {
 			// break down the route to usable pieces
