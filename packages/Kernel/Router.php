@@ -81,8 +81,7 @@ class Router
 		$function = $method[1];
 
 		// echo the function call - should always be a string
-		echo call_user_func_array([$class, $method], $variables);
-		echo $class->$function();
+		echo call_user_func_array([$class, $function], $variables);
 		exit;
 	}
 
