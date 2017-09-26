@@ -144,9 +144,9 @@ class ORM
 
 	/**
 	 * Add the group by factor for the query
-	 * 
+	 *
 	 * @param string $column column to group by
-	 * 
+	 *
 	 * @return object $this used for chaning purposes
 	 */
 	public function groupBy($column = '') {
@@ -157,9 +157,9 @@ class ORM
 
 	/**
 	 * Loop through user provided set data for the query and build the data sets for use in the query string builder function
-	 * 
+	 *
 	 * @param array $inputData
-	 * 
+	 *
 	 * @return object $this used for chaning purposes
 	 */
 	public function set($inputData) {
@@ -198,7 +198,7 @@ class ORM
 	 *    Uses the private variables set from the the chaining functions and builds them into a proper sql string
 	 *
 	 * @param string $queryType marker to determine what type of query we are building
-	 * 
+	 *
 	 * @return string[] containers the query string and the data to pass into the prepared statement
 	 */
 	private function buildQueryString($queryType = '') {
@@ -251,10 +251,10 @@ class ORM
 
 	/**
 	 * Run the query and return results
-	 * 
+	 *
 	 * @param string $sql query string to run
 	 * @param array $data query data to match the string
-	 * 
+	 *
 	 * @return boolean/array
 	 */
 	private function runit($type = 'select', $sql = '', $data = []) {
