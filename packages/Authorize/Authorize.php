@@ -2,6 +2,7 @@
 namespace Packages\Authorize;
 
 use App\Models\User as User;
+use App\Models\Company as Company;
 
 /**
  * Authorization
@@ -15,6 +16,7 @@ class Authorize
 	private $_cookieTTL = 0;
 
 	public $_user = [];
+	public $_company = [];
 
 	public function __construct() {
 		$this->_cookieTTL = time() + 3600;
@@ -84,10 +86,11 @@ class Authorize
 			return false;
 		}
 
-		$user = new User();
-		$userData = $user->where('key', '=', $key)->pull();
+		$company = new Company();
+		$company = $company->where('public_key', '=', $key)->pull();
 
-		if (is_string($key) and $key === $userData['public_key']) {
+		if (is_string($key) && !empty($company[0])) {
+			$this->_company = $company[0];
 			return true;
 		}
 

@@ -7,7 +7,7 @@ namespace Packages\Kernel;
  *    @TODO: Need to implement functions to allow for direct queries
  *    @TODO: Need to clean some things up and add more functionality / options in quering
  */
-class ORM
+class Orm
 {
 	private $_database = DB;
 	private $_user = DB_USER;
