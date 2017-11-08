@@ -68,7 +68,7 @@ class View
 				continue;
 			}
 
-			$contentRegex = '/(?<=@section\(\'content\'\)).*?(?=@endsection)/s';
+			$contentRegex = '/(?<=@section\(\'' . $sectionParts[0] . '\'\)).*?(?=@endsection)/s';
 			preg_match_all($contentRegex, $file, $content);
 			$page = str_replace('@yield(\'' . $sectionParts[0] . '\')', $content[0][0], $page);
 
