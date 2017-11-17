@@ -108,7 +108,12 @@ class Route
 		 $uriParts = explode('/', $uri);
 		 foreach ($uriParts as $key => $piece) {
 			 if (strpos($piece, ':') === 0) {
-				 $variables[$key] = ltrim($piece, ':');
+				 if (!empty($this->_uri)) {
+					 $varKey = $key + 1;
+				 } else {
+					 $varKey = $key;
+				 }
+				 $variables[$varKey] = ltrim($piece, ':');
 			 }
 		 }
 
@@ -123,7 +128,7 @@ class Route
 	 */
 	private function getWebRoutes() {
 		$this->_prefix = '';
-		require ROUTES . '/web.php';
+		require ROUTES_DIR . '/web.php';
 	}
 
 	/**
@@ -131,6 +136,6 @@ class Route
 	 */
 	private function getAPIRoutes() {
 		$this->_prefix = '/api';
-		require ROUTES . '/api.php';
+		require ROUTES_DIR . '/api.php';
 	}
 }

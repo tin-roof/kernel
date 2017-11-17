@@ -18,9 +18,9 @@ class View
 	 * @param array $variables
 	 */
 	public static function make($view = '', $variables = []) {
-		if (file_exists(VIEWS . $view . '.php')) {
+		if (file_exists(VIEWS_DIR . $view . '.php')) {
 			ob_start();
-			require(VIEWS . $view . '.php');
+			require(VIEWS_DIR . $view . '.php');
 			$file = ob_get_clean();
 
 			// put together parts of the template
@@ -53,7 +53,7 @@ class View
 
 		if (!empty($extends[1])) {
 		    ob_start();
-	 	    require(VIEWS . $extends[1][0] . '.php');
+	 	    require(VIEWS_DIR . $extends[1][0] . '.php');
 		    $page = ob_get_clean();
 		}
 
@@ -79,7 +79,7 @@ class View
 		preg_match_all($includesRegex, $page, $includes);
 		foreach($includes[1] as $include) {
 			ob_start();
-			require(VIEWS . $include . '.php');
+			require(VIEWS_DIR . $include . '.php');
 			$includeFile = ob_get_clean();
 
 			$page = str_replace('@include(\'' . $include . '\')', $includeFile, $page);

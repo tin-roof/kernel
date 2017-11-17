@@ -23,7 +23,7 @@ class Router
 
 		// set the request
 		if (empty($request)) {
-			$uri = '/';
+			$request = '/';
 		}
 
 		try {
@@ -143,7 +143,7 @@ class Router
 		$request = explode('/', $request);
 
 		foreach ($routeVariables as $key => $variable) {
-			$variables[$variable] = $request[$key+1];
+			$variables[$variable] = $request[$key];
 		}
 
 		return $variables;
