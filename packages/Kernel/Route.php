@@ -108,7 +108,7 @@ class Route
 		 $uriParts = explode('/', $uri);
 		 foreach ($uriParts as $key => $piece) {
 			 if (strpos($piece, ':') === 0) {
-				 if (!empty($this->_uri)) {
+				 if (!empty($this->_prefix)) {
 					 $varKey = $key + 1;
 				 } else {
 					 $varKey = $key;
