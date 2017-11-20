@@ -4,7 +4,6 @@ namespace Packages\Kernel;
 /**
  * ORM
  *    The database wrapper class to make querying a breeze
- *    @TODO: Need to implement functions to allow for direct queries
  *    @TODO: Need to clean some things up and add more functionality / options in quering
  */
 class Orm
@@ -16,9 +15,11 @@ class Orm
 	private $_engine = DB_ENGINE;
 	private $_host = DB_HOST;
 
+	private $_query = '';
 	private $_where = ['string' => '', 'data' => []];
 	private $_groupBy = '';
 	private $_orderBy = '';
+	private $_limit = 0;
 	private $_set = ['column' => [], 'marker' => [], 'data' => []];
 
 	protected $_con;
@@ -35,8 +36,18 @@ class Orm
 	 * @return array $data the data from the query
 	 */
 	public function pull($qty = 0) {
+		// use the given query if it exists
+		if (!empty($this->_query)) {
+			$results = $this->runit('select', $this->_query);
+			$this->resetDefaultQueryVars();
+			return $results;
+		}
+
+		$this->_limit = $qty;
 		$queryData = $this->buildQueryString();
 		$sql = 'SELECT * FROM ' . $this->_table . $queryData['sql'];
+    $this->resetDefaultQueryVars();
+
 		return $this->runit('select', $sql, $queryData['data']);
 	}
 
@@ -46,8 +57,16 @@ class Orm
 	 * @return boolean based on result
 	 */
 	public function push() {
+		// use the given query if it exists
+		if (!empty($this->_query)) {
+			$results = $this->runit('insert', $this->_query);
+      $this->resetDefaultQueryVars();
+      return $results;
+    }
+
 		$queryData = $this->buildQueryString('insert');
 		$sql = 'INSERT INTO ' . $this->_table . $queryData['sql'];
+    $this->resetDefaultQueryVars();
 		return $this->runit('insert', $sql, $queryData['data']);
 	}
 
@@ -57,8 +76,16 @@ class Orm
 	 * @return boolean based on result
 	 */
 	public function update() {
+		// use the given query if it exists
+    if (!empty($this->_query)) {
+			$results = $this->runit('update', $this->_query);
+      $this->resetDefaultQueryVars();
+      return $results;
+    }
+
 		$queryData = $this->buildQueryString('update');
 		$sql = 'UPDATE ' . $this->_table . ' SET ' . $queryData['sql'];
+    $this->resetDefaultQueryVars();
 		return $this->runit('update', $sql, $queryData['data']);
 	}
 
@@ -68,9 +95,27 @@ class Orm
 	 * @return boolean based on result
 	 */
 	public function trash() {
+		// use the given query if it exists
+    if (!empty($this->_query)) {
+			$results = $this->runit('delete', $this->_query);
+      $this->resetDefaultQueryVars();
+      return $results;
+    }
+
 		$queryData = $this->buildQueryString();
 		$sql = 'DELETE FROM ' . $this->_table . $queryData['sql'];
+    $this->resetDefaultQueryVars();
 		return $this->runit('delete', $sql, $queryData['data']);
+	}
+
+	/**
+	 * Direct user generated query
+	 *
+	 * @param string $query query passed in
+	 */
+	public function query($query = '') {
+		$this->_query = $query;
+		return $this;
 	}
 
 	/**
@@ -231,11 +276,10 @@ class Orm
 		if (!empty($this->_orderBy)) {
 			$sql .= ' ORDER BY ' . $this->_orderBy;
 		}
-		if (!empty($qty)) {
-			$sql .= ' LIMIT ' . $qty;
+		if (!empty($this->_limit)) {
+			$sql .= ' LIMIT ' . $this->_limit;
 		}
 
-		$this->resetDefaultQueryVars();
 		return ['sql' => $sql, 'data' => $data];
 	}
 
@@ -243,9 +287,11 @@ class Orm
 	 * Reset the vars after a query runs so that it doesnt interfere with the next one
 	 */
 	private function resetDefaultQueryVars() {
+		$this->_query = '';
 		$this->_where = ['string' => '', 'data' => []];
 		$this->_groupBy = '';
 		$this->_orderBy = '';
+		$this->_limit = 0;
 		$this->_set = ['column' => [], 'marker' => [], 'data' => []];
 	}
 
@@ -261,11 +307,15 @@ class Orm
 		try {
 			$dbh = $this->_con->prepare($sql);
 			$dbh->execute($data);
-			if ($type === 'select') {
-				$data = $dbh->fetchAll(\PDO::FETCH_ASSOC);
-				return $data;
-			} else {
-				return true;
+
+			switch ($type) {
+				case 'select':
+					return $dbh->fetchAll(\PDO::FETCH_ASSOC);
+				case 'insert':
+				case 'update':
+					return  $this->_con->lastInsertId();
+				default:
+					return true;
 			}
 		} catch (PDOException $e) {
 			return $e;
