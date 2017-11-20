@@ -148,6 +148,6 @@ class Authorize
 			return false;
 		}
 
-		return hash('sha512', $password);
+		return password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
 	}
 }
