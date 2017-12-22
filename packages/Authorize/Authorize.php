@@ -50,15 +50,18 @@ class Authorize
 		}
 
 		$user = new User();
-		$userData = $user->where('user_name', '=', $data['user_name'])
-						->andWhere('password', '=', $this->get_password($data['password']))
-						->pull();
+		$userData = $user->where('email', '=', $data['email'])->pull()[0];
+
+		// varify the passwords match
+		if (!password_verify($data['password'] , $userData['password'])) {
+			return false;
+		}
 
 		if (!empty($userData)) {
 			// set the login cookie
 			$token = $this->get_token(50);
 			$data = [
-				'username' => $userData[0]['user_name'],
+				'username' => $userData['email'],
 				'token' => $token,
 			];
 			$this->set_login_cookie($data);
@@ -67,7 +70,7 @@ class Authorize
 			$update = [
 				'token' => $token
 			];
-			$user->set($update)->where('id', '=', $userData[0]['id'])->update();
+			$user->set($update)->where('id', '=', $userData['id'])->update();
 
 			// store the user data incase we need it later
 			$this->_user = $userData;
@@ -87,10 +90,10 @@ class Authorize
 		}
 
 		$company = new Company();
-		$company = $company->where('public_key', '=', $key)->pull();
+		$company = $company->where('public_key', '=', $key)->pull()[0];
 
-		if (is_string($key) && !empty($company[0])) {
-			$this->_company = $company[0];
+		if (is_string($key) && !empty($company)) {
+			$this->_company = $company;
 			return true;
 		}
 

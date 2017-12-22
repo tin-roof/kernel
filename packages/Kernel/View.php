@@ -85,7 +85,8 @@ class View
 			$page = str_replace('@include(\'' . $include . '\')', $includeFile, $page);
 		}
 
-		$file = $page;
+		// remove all template structure modifiers
+		$file = preg_replace('/@(yield|include)\(\'(.*?)\'\)/', '', $page);
 		return;
 	}
 

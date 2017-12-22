@@ -16,6 +16,7 @@ class Orm
 	private $_host = DB_HOST;
 
 	private $_query = '';
+	private $_data = [];
 	private $_where = ['string' => '', 'data' => []];
 	private $_groupBy = '';
 	private $_orderBy = '';
@@ -38,7 +39,7 @@ class Orm
 	public function pull($qty = 0) {
 		// use the given query if it exists
 		if (!empty($this->_query)) {
-			$results = $this->runit('select', $this->_query);
+			$results = $this->runit('select', $this->_query, $this->_data);
 			$this->resetDefaultQueryVars();
 			return $results;
 		}
@@ -59,7 +60,7 @@ class Orm
 	public function push() {
 		// use the given query if it exists
 		if (!empty($this->_query)) {
-			$results = $this->runit('insert', $this->_query);
+			$results = $this->runit('insert', $this->_query, $this->_data);
       $this->resetDefaultQueryVars();
       return $results;
     }
@@ -78,7 +79,7 @@ class Orm
 	public function update() {
 		// use the given query if it exists
     if (!empty($this->_query)) {
-			$results = $this->runit('update', $this->_query);
+			$results = $this->runit('update', $this->_query, $this->data);
       $this->resetDefaultQueryVars();
       return $results;
     }
@@ -97,7 +98,7 @@ class Orm
 	public function trash() {
 		// use the given query if it exists
     if (!empty($this->_query)) {
-			$results = $this->runit('delete', $this->_query);
+			$results = $this->runit('delete', $this->_query, $this->_data);
       $this->resetDefaultQueryVars();
       return $results;
     }
@@ -112,9 +113,11 @@ class Orm
 	 * Direct user generated query
 	 *
 	 * @param string $query query passed in
+	 * @param array $data data used for query
 	 */
-	public function query($query = '') {
+	public function query($query = '', $data = []) {
 		$this->_query = $query;
+		$this->_data = $data;
 		return $this;
 	}
 
@@ -129,7 +132,7 @@ class Orm
 	 */
 	public function where($column = '', $operator = '=', $value = '') {
 		$this->_where['string'] = $column . ' ' . $operator . ' :' . $column;
-		$this->_where['data'][':' . $column] = $value;
+		$this->_where['data'][$column] = $value;
 		return $this;
 	}
 
@@ -148,7 +151,7 @@ class Orm
 		} else {
 			$this->_where['string'] .= $column . ' ' . $operator . ' :' . $column;
 		}
-		$this->_where['data'][':' . $column] = $value;
+		$this->_where['data'][$column] = $value;
 
 		return $this;
 	}
@@ -168,7 +171,7 @@ class Orm
 		} else {
 			$this->_where['string'] .= $column . ' ' . $operator . ' :' . $column;
 		}
-		$this->_where['data'][':' . $column] = $value;
+		$this->_where['data'][$column] = $value;
 
 		return $this;
 	}
@@ -211,7 +214,7 @@ class Orm
 		foreach ($inputData as $column => $value) {
 			$this->_set['column'][] =  $column;
 			$this->_set['marker'][] = ':' . $column;
-			$this->_set['data'][':' . $column] = $value;
+			$this->_set['data'][$column] = $value;
 		}
 
 		return $this;
@@ -288,6 +291,7 @@ class Orm
 	 */
 	private function resetDefaultQueryVars() {
 		$this->_query = '';
+		$this->_data = [];
 		$this->_where = ['string' => '', 'data' => []];
 		$this->_groupBy = '';
 		$this->_orderBy = '';
