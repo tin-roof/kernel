@@ -48,7 +48,14 @@ class Router
 		if (empty($this->_routes[$method][$request])) {
 			$route = $this->validateRequest($method, $request);
 			if (empty($route)) {
-				throw new \Exception('The route you are looking for doesnt exist');
+				// check for file in the public folder
+				if (!file_exists(PUBLIC_DIR . $request)) {
+					throw new \Exception('The route you are looking for doesnt exist');
+					exit;
+				}
+
+				$file = file_get_contents(PUBLIC_DIR . $request);
+				echo $file;
 				exit;
 			}
 		} else {
